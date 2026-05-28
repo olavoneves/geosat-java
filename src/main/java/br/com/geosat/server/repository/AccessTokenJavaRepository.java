@@ -12,6 +12,9 @@ public interface AccessTokenJavaRepository extends JpaRepository<AccessTokenJava
 
     Optional<AccessTokenJava> findByDsToken(String dsToken);
 
+    @Query("SELECT t FROM AccessTokenJava t JOIN FETCH t.usuario WHERE t.dsToken = :dsToken")
+    Optional<AccessTokenJava> findByDsTokenWithUsuario(@Param("dsToken") String dsToken);
+
     @Modifying
     @Query("UPDATE AccessTokenJava t SET t.flRevogado = 'S' WHERE t.usuario.idUsuario = :idUsuario AND t.flRevogado = 'N'")
     void revokeAllActiveByUsuarioId(@Param("idUsuario") Long idUsuario);

@@ -1,11 +1,10 @@
 package br.com.geosat.server.filter;
 
 import br.com.geosat.server.dto.response.ErrorResponse;
-import br.com.geosat.server.exception.TokenExpiredException;
 import br.com.geosat.server.model.AccessTokenJava;
 import br.com.geosat.server.repository.AccessTokenJavaRepository;
-import br.com.geosat.server.repository.UsuarioJavaRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,16 +28,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     );
 
     private final AccessTokenJavaRepository accessTokenRepo;
-    private final UsuarioJavaRepository usuarioRepo;
     private final ObjectMapper objectMapper;
 
-    public AuthTokenFilter(AccessTokenJavaRepository accessTokenRepo,
-                           UsuarioJavaRepository usuarioRepo) {
+    public AuthTokenFilter(AccessTokenJavaRepository accessTokenRepo) {
         this.accessTokenRepo = accessTokenRepo;
-        this.usuarioRepo = usuarioRepo;
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.registerModule(new JavaTimeModule());
-        this.objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        this.objectMapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
     @Override
@@ -61,7 +57,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         String rawToken = authHeader.substring(7);
         String tokenHash = TokenUtils.hashToken(rawToken);
 
-        Optional<AccessTokenJava> tokenOpt = accessTokenRepo.findByDsToken(tokenHash);
+        // JOIN FETCH carrega o usuário na mesma query — sem lazy loading fora de sessão
+        Optional<AccessTokenJava> tokenOpt = accessTokenRepo.findByDsTokenWithUsuario(tokenHash);
 
         if (tokenOpt.isEmpty()) {
             sendUnauthorized(response, request.getRequestURI(), "Token inválido");
@@ -88,8 +85,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-
-        ErrorResponse error = ErrorResponse.of(401, "Unauthorized", message, path);
-        response.getWriter().write(objectMapper.writeValueAsString(error));
+        response.getWriter().write(objectMapper.writeValueAsString(
+                ErrorResponse.of(401, "Unauthorized", message, path)));
     }
 }
