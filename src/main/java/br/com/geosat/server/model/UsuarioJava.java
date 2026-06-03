@@ -28,16 +28,16 @@ public class UsuarioJava {
     @Column(name = "DS_ROLE", length = 10)
     private String dsRole = "USER";
 
-    @Column(name = "FL_ATIVO", length = 1)
-    private String flAtivo = "S";
-
-    @Column(name = "DT_CRIACAO", updatable = false)
-    private LocalDateTime dtCriacao;
+    @Embedded
+    private Auditoria auditoria = new Auditoria();
 
     @PrePersist
     void prePersist() {
-        if (dtCriacao == null) dtCriacao = LocalDateTime.now();
-        if (flAtivo == null) flAtivo = "S";
         if (dsRole == null) dsRole = "USER";
     }
+
+    public String getFlAtivo() { return auditoria.getFlAtivo(); }
+    public void setFlAtivo(String v) { auditoria.setFlAtivo(v); }
+    public LocalDateTime getDtCriacao() { return auditoria.getDtCriacao(); }
+    public void setDtCriacao(LocalDateTime v) { auditoria.setDtCriacao(v); }
 }
