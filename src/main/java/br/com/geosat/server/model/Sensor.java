@@ -26,15 +26,15 @@ public class Sensor {
     @Column(name = "DS_LOCALIZACAO", length = 200)
     private String dsLocalizacao;
 
-    @Column(name = "FL_ATIVO", length = 1)
-    private String flAtivo = "S";
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "flAtivo", column = @Column(name = "FL_ATIVO", length = 1)),
+        @AttributeOverride(name = "dtCriacao", column = @Column(name = "DT_INSTALACAO", updatable = false))
+    })
+    private Auditoria auditoria = new Auditoria();
 
-    @Column(name = "DT_INSTALACAO", updatable = false)
-    private LocalDateTime dtInstalacao;
-
-    @PrePersist
-    void prePersist() {
-        if (dtInstalacao == null) dtInstalacao = LocalDateTime.now();
-        if (flAtivo == null) flAtivo = "S";
-    }
+    public String getFlAtivo() { return auditoria.getFlAtivo(); }
+    public void setFlAtivo(String v) { auditoria.setFlAtivo(v); }
+    public LocalDateTime getDtInstalacao() { return auditoria.getDtCriacao(); }
+    public void setDtInstalacao(LocalDateTime v) { auditoria.setDtCriacao(v); }
 }
