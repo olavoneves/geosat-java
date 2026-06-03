@@ -33,15 +33,15 @@ public class Propriedade {
     @Column(name = "NR_AREA_HA", nullable = false, precision = 10, scale = 2)
     private BigDecimal nrAreaHa;
 
-    @Column(name = "FL_ATIVA", length = 1)
-    private String flAtiva = "S";
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "flAtivo", column = @Column(name = "FL_ATIVA", length = 1)),
+        @AttributeOverride(name = "dtCriacao", column = @Column(name = "DT_CRIACAO", updatable = false))
+    })
+    private Auditoria auditoria = new Auditoria();
 
-    @Column(name = "DT_CRIACAO", updatable = false)
-    private LocalDateTime dtCriacao;
-
-    @PrePersist
-    void prePersist() {
-        if (dtCriacao == null) dtCriacao = LocalDateTime.now();
-        if (flAtiva == null) flAtiva = "S";
-    }
+    public String getFlAtiva() { return auditoria.getFlAtivo(); }
+    public void setFlAtiva(String v) { auditoria.setFlAtivo(v); }
+    public LocalDateTime getDtCriacao() { return auditoria.getDtCriacao(); }
+    public void setDtCriacao(LocalDateTime v) { auditoria.setDtCriacao(v); }
 }
