@@ -10,9 +10,9 @@ public interface UsuarioJavaRepository extends JpaRepository<UsuarioJava, Long> 
 
     Optional<UsuarioJava> findByDsEmail(String dsEmail);
 
-    Optional<UsuarioJava> findByIdUsuarioAndFlAtivo(Long idUsuario, String flAtivo);
+    Optional<UsuarioJava> findByIdUsuarioAndAuditoria_FlAtivo(Long idUsuario, String flAtivo);
 
-    List<UsuarioJava> findAllByFlAtivo(String flAtivo);
+    List<UsuarioJava> findAllByAuditoria_FlAtivo(String flAtivo);
 
     boolean existsByDsEmail(String dsEmail);
 }

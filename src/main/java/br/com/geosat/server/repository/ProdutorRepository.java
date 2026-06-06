@@ -8,11 +8,11 @@ import java.util.Optional;
 
 public interface ProdutorRepository extends JpaRepository<Produtor, Long> {
 
-    Optional<Produtor> findByIdProdutorAndFlAtivo(Long idProdutor, String flAtivo);
+    Optional<Produtor> findByIdProdutorAndAuditoria_FlAtivo(Long idProdutor, String flAtivo);
 
-    Optional<Produtor> findByUsuario_IdUsuarioAndFlAtivo(Long idUsuario, String flAtivo);
+    Optional<Produtor> findByUsuario_IdUsuarioAndAuditoria_FlAtivo(Long idUsuario, String flAtivo);
 
-    List<Produtor> findAllByFlAtivo(String flAtivo);
+    List<Produtor> findAllByAuditoria_FlAtivo(String flAtivo);
 
     boolean existsByNrCpf(String nrCpf);
 

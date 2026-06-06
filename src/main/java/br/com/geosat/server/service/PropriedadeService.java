@@ -27,7 +27,7 @@ public class PropriedadeService {
 
     @Transactional
     public PropriedadeResponse criar(PropriedadeRequest request, UsuarioJava usuario) {
-        Produtor produtor = produtorRepo.findByUsuario_IdUsuarioAndFlAtivo(usuario.getIdUsuario(), "S")
+        Produtor produtor = produtorRepo.findByUsuario_IdUsuarioAndAuditoria_FlAtivo(usuario.getIdUsuario(), "S")
                 .orElseThrow(() -> new ResourceNotFoundException("Produtor não encontrado para o usuário logado"));
 
         Propriedade p = new Propriedade();
@@ -41,7 +41,7 @@ public class PropriedadeService {
     }
 
     public List<PropriedadeResponse> listarTodas() {
-        return propriedadeRepo.findAllByFlAtiva("S").stream()
+        return propriedadeRepo.findAllByAuditoria_FlAtivo("S").stream()
                 .map(PropriedadeResponse::from)
                 .toList();
     }
@@ -53,11 +53,11 @@ public class PropriedadeService {
     }
 
     public List<PropriedadeResponse> listarPorProdutor(Long idProdutor, UsuarioJava usuario) {
-        Produtor produtor = produtorRepo.findByIdProdutorAndFlAtivo(idProdutor, "S")
+        Produtor produtor = produtorRepo.findByIdProdutorAndAuditoria_FlAtivo(idProdutor, "S")
                 .orElseThrow(() -> new ResourceNotFoundException("Produtor não encontrado: " + idProdutor));
         verificarAcessoProdutor(produtor, usuario);
 
-        return propriedadeRepo.findAllByProdutor_IdProdutorAndFlAtiva(idProdutor, "S").stream()
+        return propriedadeRepo.findAllByProdutor_IdProdutorAndAuditoria_FlAtivo(idProdutor, "S").stream()
                 .map(PropriedadeResponse::from)
                 .toList();
     }
@@ -84,7 +84,7 @@ public class PropriedadeService {
     }
 
     private Propriedade getAtiva(Long id) {
-        return propriedadeRepo.findByIdPropriedadeAndFlAtiva(id, "S")
+        return propriedadeRepo.findByIdPropriedadeAndAuditoria_FlAtivo(id, "S")
                 .orElseThrow(() -> new ResourceNotFoundException("Propriedade não encontrada: " + id));
     }
 

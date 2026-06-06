@@ -42,7 +42,7 @@ public class ProdutorService {
     }
 
     public List<ProdutorResponse> listarTodos() {
-        return produtorRepo.findAllByFlAtivo("S").stream()
+        return produtorRepo.findAllByAuditoria_FlAtivo("S").stream()
                 .map(ProdutorResponse::from)
                 .toList();
     }
@@ -55,7 +55,7 @@ public class ProdutorService {
 
     public ProdutorResponse buscarMeu(UsuarioJava usuario) {
         return ProdutorResponse.from(
-                produtorRepo.findByUsuario_IdUsuarioAndFlAtivo(usuario.getIdUsuario(), "S")
+                produtorRepo.findByUsuario_IdUsuarioAndAuditoria_FlAtivo(usuario.getIdUsuario(), "S")
                         .orElseThrow(() -> new ResourceNotFoundException("Produtor não encontrado para o usuário logado")));
     }
 
@@ -79,7 +79,7 @@ public class ProdutorService {
     }
 
     private Produtor getAtivo(Long id) {
-        return produtorRepo.findByIdProdutorAndFlAtivo(id, "S")
+        return produtorRepo.findByIdProdutorAndAuditoria_FlAtivo(id, "S")
                 .orElseThrow(() -> new ResourceNotFoundException("Produtor não encontrado: " + id));
     }
 

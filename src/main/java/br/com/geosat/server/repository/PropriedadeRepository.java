@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface PropriedadeRepository extends JpaRepository<Propriedade, Long> {
 
-    Optional<Propriedade> findByIdPropriedadeAndFlAtiva(Long idPropriedade, String flAtiva);
+    Optional<Propriedade> findByIdPropriedadeAndAuditoria_FlAtivo(Long idPropriedade, String flAtivo);
 
-    List<Propriedade> findAllByFlAtiva(String flAtiva);
+    List<Propriedade> findAllByAuditoria_FlAtivo(String flAtivo);
 
-    List<Propriedade> findAllByProdutor_IdProdutorAndFlAtiva(Long idProdutor, String flAtiva);
+    List<Propriedade> findAllByProdutor_IdProdutorAndAuditoria_FlAtivo(Long idProdutor, String flAtivo);
 }

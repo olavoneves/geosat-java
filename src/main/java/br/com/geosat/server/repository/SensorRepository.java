@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface SensorRepository extends JpaRepository<Sensor, Long> {
 
-    Optional<Sensor> findByIdSensorAndFlAtivo(Long idSensor, String flAtivo);
+    Optional<Sensor> findByIdSensorAndAuditoria_FlAtivo(Long idSensor, String flAtivo);
 
-    List<Sensor> findAllByTalhao_IdTalhaoAndFlAtivo(Long idTalhao, String flAtivo);
+    List<Sensor> findAllByTalhao_IdTalhaoAndAuditoria_FlAtivo(Long idTalhao, String flAtivo);
 
     boolean existsByCdIdentificadorHw(String cdIdentificadorHw);
 }
