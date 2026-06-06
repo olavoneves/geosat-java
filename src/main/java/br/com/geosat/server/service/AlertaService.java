@@ -112,7 +112,7 @@ public class AlertaService {
     }
 
     private Produtor getProdutorDoUsuario(UsuarioJava usuario) {
-        return produtorRepo.findByUsuario_IdUsuarioAndFlAtivo(usuario.getIdUsuario(), "S")
+        return produtorRepo.findByUsuario_IdUsuarioAndAuditoria_FlAtivo(usuario.getIdUsuario(), "S")
                 .orElseThrow(() -> new ResourceNotFoundException("Produtor não encontrado para o usuário logado"));
     }
 }

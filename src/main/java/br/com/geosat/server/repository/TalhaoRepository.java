@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface TalhaoRepository extends JpaRepository<Talhao, Long> {
 
-    Optional<Talhao> findByIdTalhaoAndFlAtivo(Long idTalhao, String flAtivo);
+    Optional<Talhao> findByIdTalhaoAndAuditoria_FlAtivo(Long idTalhao, String flAtivo);
 
-    List<Talhao> findAllByPropriedade_IdPropriedadeAndFlAtivo(Long idPropriedade, String flAtivo);
+    List<Talhao> findAllByPropriedade_IdPropriedadeAndAuditoria_FlAtivo(Long idPropriedade, String flAtivo);
 }
