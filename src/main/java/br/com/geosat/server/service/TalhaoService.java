@@ -45,7 +45,7 @@ public class TalhaoService {
 
     public List<TalhaoResponse> listarPorPropriedade(Long idPropriedade, UsuarioJava usuario) {
         getPropriedadeComAcesso(idPropriedade, usuario);
-        return talhaoRepo.findAllByPropriedade_IdPropriedadeAndFlAtivo(idPropriedade, "S").stream()
+        return talhaoRepo.findAllByPropriedade_IdPropriedadeAndAuditoria_FlAtivo(idPropriedade, "S").stream()
                 .map(TalhaoResponse::from)
                 .toList();
     }
@@ -71,12 +71,12 @@ public class TalhaoService {
     }
 
     private Talhao getAtivo(Long id) {
-        return talhaoRepo.findByIdTalhaoAndFlAtivo(id, "S")
+        return talhaoRepo.findByIdTalhaoAndAuditoria_FlAtivo(id, "S")
                 .orElseThrow(() -> new ResourceNotFoundException("Talhão não encontrado: " + id));
     }
 
     private Propriedade getPropriedadeComAcesso(Long idPropriedade, UsuarioJava usuario) {
-        Propriedade p = propriedadeRepo.findByIdPropriedadeAndFlAtiva(idPropriedade, "S")
+        Propriedade p = propriedadeRepo.findByIdPropriedadeAndAuditoria_FlAtivo(idPropriedade, "S")
                 .orElseThrow(() -> new ResourceNotFoundException("Propriedade não encontrada: " + idPropriedade));
         if (!"ADMIN".equals(usuario.getDsRole())
                 && !p.getProdutor().getUsuario().getIdUsuario().equals(usuario.getIdUsuario())) {
