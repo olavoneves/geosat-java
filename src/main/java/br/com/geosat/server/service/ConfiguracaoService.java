@@ -46,7 +46,7 @@ public class ConfiguracaoService {
     }
 
     private void verificarAcessoTalhao(Long idTalhao, UsuarioJava usuario) {
-        Talhao t = talhaoRepo.findByIdTalhaoAndFlAtivo(idTalhao, "S")
+        Talhao t = talhaoRepo.findByIdTalhaoAndAuditoria_FlAtivo(idTalhao, "S")
                 .orElseThrow(() -> new ResourceNotFoundException("Talhão não encontrado: " + idTalhao));
 
         if (!"ADMIN".equals(usuario.getDsRole())
