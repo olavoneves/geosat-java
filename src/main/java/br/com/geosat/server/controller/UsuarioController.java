@@ -3,7 +3,7 @@ package br.com.geosat.server.controller;
 import br.com.geosat.server.dto.request.AlterarSenhaRequest;
 import br.com.geosat.server.dto.request.UsuarioRequest;
 import br.com.geosat.server.dto.response.UsuarioResponse;
-import br.com.geosat.server.exception.UnauthorizedException;
+import br.com.geosat.server.exception.ForbiddenException;
 import br.com.geosat.server.model.UsuarioJava;
 import br.com.geosat.server.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -96,7 +96,7 @@ public class UsuarioController {
     private void requireAdmin(HttpServletRequest request) {
         UsuarioJava user = (UsuarioJava) request.getAttribute("currentUser");
         if (!"ADMIN".equals(user.getDsRole())) {
-            throw new UnauthorizedException("Acesso restrito a administradores");
+            throw new ForbiddenException("Acesso restrito a administradores");
         }
     }
 }
