@@ -68,7 +68,7 @@ public class AuthController {
     private void requireAdmin(HttpServletRequest request) {
         UsuarioJava user = (UsuarioJava) request.getAttribute("currentUser");
         if (!"ADMIN".equals(user.getDsRole())) {
-            throw new br.com.geosat.server.exception.UnauthorizedException("Acesso restrito a administradores");
+            throw new br.com.geosat.server.exception.ForbiddenException("Acesso restrito a administradores");
         }
     }
 }
