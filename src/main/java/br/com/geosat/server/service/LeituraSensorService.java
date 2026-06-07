@@ -27,7 +27,7 @@ public class LeituraSensorService {
 
     @Transactional
     public LeituraSensorResponse criar(LeituraSensorRequest request, UsuarioJava usuario) {
-        Sensor sensor = sensorRepo.findByIdSensorAndFlAtivo(request.idSensor(), "S")
+        Sensor sensor = sensorRepo.findByIdSensorAndAuditoria_FlAtivo(request.idSensor(), "S")
                 .orElseThrow(() -> new ResourceNotFoundException("Sensor não encontrado: " + request.idSensor()));
 
         verificarAcessoSensor(sensor, usuario);
@@ -50,7 +50,7 @@ public class LeituraSensorService {
     }
 
     public Page<LeituraSensorResponse> listarPorSensor(Long idSensor, UsuarioJava usuario, Pageable pageable) {
-        Sensor sensor = sensorRepo.findByIdSensorAndFlAtivo(idSensor, "S")
+        Sensor sensor = sensorRepo.findByIdSensorAndAuditoria_FlAtivo(idSensor, "S")
                 .orElseThrow(() -> new ResourceNotFoundException("Sensor não encontrado: " + idSensor));
         verificarAcessoSensor(sensor, usuario);
 
@@ -59,7 +59,7 @@ public class LeituraSensorService {
     }
 
     public LeituraSensorResponse ultimaLeitura(Long idSensor, UsuarioJava usuario) {
-        Sensor sensor = sensorRepo.findByIdSensorAndFlAtivo(idSensor, "S")
+        Sensor sensor = sensorRepo.findByIdSensorAndAuditoria_FlAtivo(idSensor, "S")
                 .orElseThrow(() -> new ResourceNotFoundException("Sensor não encontrado: " + idSensor));
         verificarAcessoSensor(sensor, usuario);
 

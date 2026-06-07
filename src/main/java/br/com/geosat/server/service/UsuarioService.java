@@ -32,7 +32,7 @@ public class UsuarioService {
     }
 
     public List<UsuarioResponse> listarTodos() {
-        return usuarioRepo.findAllByFlAtivo("S").stream()
+        return usuarioRepo.findAllByAuditoria_FlAtivo("S").stream()
                 .map(UsuarioResponse::from)
                 .toList();
     }
@@ -80,7 +80,7 @@ public class UsuarioService {
     }
 
     private UsuarioJava getAtivo(Long id) {
-        return usuarioRepo.findByIdUsuarioAndFlAtivo(id, "S")
+        return usuarioRepo.findByIdUsuarioAndAuditoria_FlAtivo(id, "S")
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado: " + id));
     }
 }

@@ -49,7 +49,7 @@ public class SensorService {
 
     public List<SensorResponse> listarPorTalhao(Long idTalhao, UsuarioJava usuario) {
         getTalhaoComAcesso(idTalhao, usuario);
-        return sensorRepo.findAllByTalhao_IdTalhaoAndFlAtivo(idTalhao, "S").stream()
+        return sensorRepo.findAllByTalhao_IdTalhaoAndAuditoria_FlAtivo(idTalhao, "S").stream()
                 .map(SensorResponse::from)
                 .toList();
     }
@@ -73,12 +73,12 @@ public class SensorService {
     }
 
     private Sensor getAtivo(Long id) {
-        return sensorRepo.findByIdSensorAndFlAtivo(id, "S")
+        return sensorRepo.findByIdSensorAndAuditoria_FlAtivo(id, "S")
                 .orElseThrow(() -> new ResourceNotFoundException("Sensor não encontrado: " + id));
     }
 
     private Talhao getTalhaoComAcesso(Long idTalhao, UsuarioJava usuario) {
-        Talhao t = talhaoRepo.findByIdTalhaoAndFlAtivo(idTalhao, "S")
+        Talhao t = talhaoRepo.findByIdTalhaoAndAuditoria_FlAtivo(idTalhao, "S")
                 .orElseThrow(() -> new ResourceNotFoundException("Talhão não encontrado: " + idTalhao));
         verificarAcessoTalhao(t, usuario);
         return t;
