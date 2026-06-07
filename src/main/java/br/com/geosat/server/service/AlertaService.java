@@ -13,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 import java.util.List;
 
 @Service
@@ -69,6 +71,7 @@ public class AlertaService {
             throw new BusinessException("Alerta já está resolvido");
         }
 
+        a.setDtVisualizado(LocalDateTime.now());
         a.setStStatus("VISUALIZADO");
         return AlertaResponse.from(alertaRepo.save(a));
     }
@@ -78,6 +81,7 @@ public class AlertaService {
         Alerta a = getAlerta(id);
         verificarAcesso(a, usuario);
 
+        a.setDtResolvido(LocalDateTime.now());
         a.setStStatus("RESOLVIDO");
         return AlertaResponse.from(alertaRepo.save(a));
     }
