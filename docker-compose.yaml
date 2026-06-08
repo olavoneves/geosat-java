@@ -1,0 +1,69 @@
+# ============================================================
+#  GEOSAT — Docker Compose
+#  Servicos: Oracle DB + API Java Spring Boot
+# ============================================================
+
+services:
+
+  # --------------------------------------------------------
+  #  BANCO DE DADOS ORACLE
+  # --------------------------------------------------------
+  oracle-db:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: oracle-geosat-561940
+    environment:
+      - ORACLE_PASSWORD=GeoSat2026
+      - APP_USER=geosat
+      - APP_USER_PASSWORD=GeoSat2026
+      - ORACLE_DATABASE=GEOSATDB
+    ports:
+      - "1521:1521"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+    networks:
+      - geosat-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 30s
+      timeout: 15s
+      retries: 15
+      start_period: 180s
+    restart: unless-stopped
+
+  # --------------------------------------------------------
+  #  API JAVA SPRING BOOT
+  # --------------------------------------------------------
+  api-java:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-geosat-561940
+    environment:
+      - DB_GST_URL=jdbc:oracle:thin:@oracle-db:1521/GEOSATDB
+      - DB_GST_USERNAME=geosat
+      - DB_GST_PASSWORD=GeoSat2026
+      - GEOSAT_AUTH_SECRET=geosat-2026-fiap-secret-key
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ports:
+      - "8080:8080"
+    networks:
+      - geosat-network
+    mem_limit: 1g
+    depends_on:
+      oracle-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+# --------------------------------------------------------
+#  VOLUME NOMEADO (persistencia dos dados do Oracle)
+# --------------------------------------------------------
+volumes:
+  oracle-data:
+    name: oracle-data
+
+# --------------------------------------------------------
+#  REDE DOCKER
+# --------------------------------------------------------
+networks:
+  geosat-network:
+    name: geosat-network
