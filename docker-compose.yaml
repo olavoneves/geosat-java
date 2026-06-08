@@ -22,13 +22,12 @@ services:
       - oracle-data:/opt/oracle/oradata
     networks:
       - geosat-network
-    mem_limit: 2g
     healthcheck:
       test: ["CMD", "healthcheck.sh"]
       interval: 30s
-      timeout: 10s
-      retries: 10
-      start_period: 120s
+      timeout: 15s
+      retries: 15
+      start_period: 180s
     restart: unless-stopped
 
   # --------------------------------------------------------
