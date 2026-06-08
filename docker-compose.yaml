@@ -1,7 +1,6 @@
 # ============================================================
 #  GEOSAT — Docker Compose
 #  Servicos: Oracle DB + API Java Spring Boot
-#  Variaveis sensiveis no arquivo .env
 # ============================================================
 
 services:
@@ -11,13 +10,12 @@ services:
   # --------------------------------------------------------
   oracle-db:
     image: gvenzl/oracle-xe:21-slim
-    container_name: oracle-geosat
-    env_file: .env
+    container_name: oracle-geosat-561940
     environment:
-      - ORACLE_PASSWORD=${ORACLE_PASSWORD}
-      - APP_USER=${APP_USER}
-      - APP_USER_PASSWORD=${APP_USER_PASSWORD}
-      - ORACLE_DATABASE=${ORACLE_DATABASE}
+      - ORACLE_PASSWORD=GeoSat2026
+      - APP_USER=geosat
+      - APP_USER_PASSWORD=GeoSat2026
+      - ORACLE_DATABASE=GEOSATDB
     ports:
       - "1521:1521"
     volumes:
@@ -40,13 +38,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: api-geosat
-    env_file: .env
+    container_name: api-geosat-561940
     environment:
-      - DB_GST_URL=jdbc:oracle:thin:@oracle-db:1521/${ORACLE_DATABASE}
-      - DB_GST_USERNAME=${APP_USER}
-      - DB_GST_PASSWORD=${APP_USER_PASSWORD}
-      - GEOSAT_AUTH_SECRET=${GEOSAT_AUTH_SECRET}
+      - DB_GST_URL=jdbc:oracle:thin:@oracle-db:1521/GEOSATDB
+      - DB_GST_USERNAME=geosat
+      - DB_GST_PASSWORD=GeoSat2026
+      - GEOSAT_AUTH_SECRET=geosat-2026-fiap-secret-key
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     ports:
       - "8080:8080"
