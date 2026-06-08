@@ -61,12 +61,10 @@ services:
 volumes:
   oracle-data:
     name: oracle-data
-networks:
-  geosat-network:
-    name: geosat-network
 
 # --------------------------------------------------------
 #  REDE DOCKER
 # --------------------------------------------------------
 networks:
   geosat-network:
+    name: geosat-network
