@@ -299,7 +299,7 @@ classDiagram
 #### Tratamento de Erros (404)
 ![Recurso não encontrado — 404 Not Found](docs/prints/404.png)
 
-#### Controle de Acesso (403)
+#### Controle de Acesso (401)
 ![Acesso Restrito — 403 Forbidden](docs/prints/acesso-restrito.png)
 
 ---
