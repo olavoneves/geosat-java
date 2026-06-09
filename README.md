@@ -1,75 +1,356 @@
-# GeoSat API — Java REST Backend
+﻿# GeoSat API ÔÇö Java REST Backend
 
-API REST do sistema **GeoSat**, plataforma de monitoramento agrícola que combina imagens satelitais (NASA/ESA) com sensores IoT ESP32 para geração de alertas antecipados de risco para produtores rurais brasileiros.
+API REST do sistema **GeoSat**, plataforma de monitoramento agr├¡cola que combina imagens satelitais (NASA/ESA) com sensores IoT ESP32 para gera├º├úo de alertas antecipados de risco para produtores rurais brasileiros.
 
-> **FIAP — Global Solution 2026/1 | 2TDS Fevereiro**
+> **FIAP ÔÇö Global Solution 2026/1 | 2TDS Fevereiro**
+
+> **Professor Orientador:** Marcel Stefan Wagner
 
 ---
 
-## 🔗 Links
+## ­ƒöù Links
 
 | Recurso | Link |
 |---------|------|
-| 🚀 Deploy (produção) | *https://geosat-java.onrender.com* |
-| 📖 Swagger UI (produção) | *https://geosat-java.onrender.com/swagger-ui/index.html* |
-| 🎥 Vídeo de Apresentação | **[SUBSTITUIR — link do YouTube após gravação]** |
-| 🎯 Vídeo Pitch (3 min) | **[SUBSTITUIR — link do YouTube após gravação]** |
-| 💻 Repositório GitHub | *https://github.com/olavoneves/geosat-java* |
+| ­ƒÜÇ Deploy (produ├º├úo) | *https://geosat-java.onrender.com* |
+| ­ƒôû Swagger UI (produ├º├úo) | *https://geosat-java.onrender.com/swagger-ui/index.html* |
+| ­ƒÄÑ V├¡deo de Apresenta├º├úo | **[SUBSTITUIR ÔÇö link do YouTube ap├│s grava├º├úo]** |
+| ­ƒÄ» V├¡deo Pitch (3 min) | **[SUBSTITUIR ÔÇö link do YouTube ap├│s grava├º├úo]** |
+| ­ƒÆ╗ Reposit├│rio GitHub | *https://github.com/olavoneves/geosat-java* |
 
 ---
 
-## 📐 Diagrama de Entidades
+## ­ƒôÉ Diagrama de Entidades
 
 ```mermaid
 erDiagram
-    TB_GST_USUARIO_JAVA ||--o{ TB_GST_PRODUTOR : "cadastra"
+    TB_GST_USUARIO_JAVA {
+        NUMBER id_usuario PK
+        VARCHAR2 nm_nome
+        VARCHAR2 ds_email UK
+        VARCHAR2 ds_senha_hash
+        VARCHAR2 ds_role
+        CHAR fl_ativo
+        TIMESTAMP dt_criacao
+    }
+
+    TB_GST_ACCESS_TOKEN_JAVA {
+        NUMBER id_access PK
+        NUMBER id_usuario FK
+        VARCHAR2 ds_token UK
+        TIMESTAMP dt_expiracao
+        CHAR fl_revogado
+        TIMESTAMP dt_criacao
+    }
+
+    TB_GST_REFRESH_TOKEN_JAVA {
+        NUMBER id_refresh PK
+        NUMBER id_usuario FK
+        VARCHAR2 ds_token UK
+        TIMESTAMP dt_expiracao
+        CHAR fl_revogado
+        TIMESTAMP dt_criacao
+    }
+
+    TB_GST_PRODUTOR {
+        NUMBER id_produtor PK
+        NUMBER id_usuario FK
+        VARCHAR2 nm_nome
+        CHAR nr_cpf UK
+        VARCHAR2 ds_email UK
+        VARCHAR2 nr_telefone
+        VARCHAR2 ds_fcm_token
+        CHAR fl_ativo
+        TIMESTAMP dt_criacao
+    }
+
+    TB_GST_PROPRIEDADE {
+        NUMBER id_propriedade PK
+        NUMBER id_produtor FK
+        VARCHAR2 nm_nome
+        VARCHAR2 nm_municipio
+        CHAR sg_estado
+        NUMBER nr_area_ha
+        CHAR fl_ativa
+        TIMESTAMP dt_criacao
+    }
+
+    TB_GST_TALHAO {
+        NUMBER id_talhao PK
+        NUMBER id_propriedade FK
+        VARCHAR2 nm_nome
+        VARCHAR2 ds_cultura
+        NUMBER nr_area_ha
+        CHAR fl_ativo
+        TIMESTAMP dt_criacao
+    }
+
+    TB_GST_SENSOR {
+        NUMBER id_sensor PK
+        NUMBER id_talhao FK
+        VARCHAR2 cd_identificador_hw UK
+        VARCHAR2 ds_localizacao
+        CHAR fl_ativo
+        TIMESTAMP dt_instalacao
+    }
+
+    TB_GST_LEITURA_SENSOR {
+        NUMBER id_leitura PK
+        NUMBER id_sensor FK
+        TIMESTAMP dt_leitura
+        NUMBER nr_temp_ar
+        NUMBER nr_umidade_solo
+        NUMBER nr_luminosidade
+        CHAR fl_transmitida
+        TIMESTAMP dt_recebida
+    }
+
+    TB_GST_IMAGEM_SATELITAL {
+        NUMBER id_imagem PK
+        NUMBER id_talhao FK
+        DATE dt_captura
+        NUMBER nr_ndvi
+        VARCHAR2 ds_fonte
+        VARCHAR2 ds_status_proc
+        VARCHAR2 ds_erro
+        TIMESTAMP dt_processado
+    }
+
+    TB_GST_CONFIGURACAO {
+        NUMBER id_config PK
+        NUMBER id_talhao FK
+        NUMBER nr_threshold_umid_min
+        NUMBER nr_threshold_ndvi_min
+        NUMBER nr_janela_fusao_horas
+        TIMESTAMP dt_atualizacao
+    }
+
+    TB_GST_ALERTA {
+        NUMBER id_alerta PK
+        NUMBER id_talhao FK
+        VARCHAR2 tp_tipo
+        VARCHAR2 tp_nivel
+        VARCHAR2 tp_origem
+        VARCHAR2 ds_descricao
+        VARCHAR2 st_status
+        TIMESTAMP dt_gerado
+        TIMESTAMP dt_visualizado
+        TIMESTAMP dt_resolvido
+    }
+
+    TB_GST_LOG_ALERTA {
+        NUMBER id_log PK
+        NUMBER id_alerta FK
+        VARCHAR2 ds_acao
+        VARCHAR2 ds_origem
+        VARCHAR2 ds_observacao
+        TIMESTAMP dt_evento
+    }
+
     TB_GST_USUARIO_JAVA ||--o{ TB_GST_ACCESS_TOKEN_JAVA : "possui"
     TB_GST_USUARIO_JAVA ||--o{ TB_GST_REFRESH_TOKEN_JAVA : "possui"
-    TB_GST_PRODUTOR ||--o{ TB_GST_PROPRIEDADE : "possui"
-    TB_GST_PROPRIEDADE ||--o{ TB_GST_TALHAO : "subdivide"
-    TB_GST_TALHAO ||--o{ TB_GST_SENSOR : "recebe"
-    TB_GST_TALHAO ||--o{ TB_GST_IMAGEM_SATELITAL : "associa"
-    TB_GST_TALHAO ||--o{ TB_GST_ALERTA : "dispara"
-    TB_GST_TALHAO ||--|| TB_GST_CONFIGURACAO : "configura"
-    TB_GST_SENSOR ||--o{ TB_GST_LEITURA_SENSOR : "gera"
-    TB_GST_ALERTA ||--o{ TB_GST_LOG_ALERTA : "registra"
+    TB_GST_USUARIO_JAVA ||--o{ TB_GST_PRODUTOR : "cadastra"
+    TB_GST_PRODUTOR     ||--o{ TB_GST_PROPRIEDADE : "possui"
+    TB_GST_PROPRIEDADE  ||--o{ TB_GST_TALHAO : "subdivide"
+    TB_GST_TALHAO       ||--o{ TB_GST_SENSOR : "recebe"
+    TB_GST_TALHAO       ||--o{ TB_GST_IMAGEM_SATELITAL : "associa"
+    TB_GST_TALHAO       ||--o{ TB_GST_ALERTA : "dispara"
+    TB_GST_TALHAO       ||--|| TB_GST_CONFIGURACAO : "configura"
+    TB_GST_SENSOR       ||--o{ TB_GST_LEITURA_SENSOR : "gera"
+    TB_GST_ALERTA       ||--o{ TB_GST_LOG_ALERTA : "registra"
 ```
 
 ---
 
-## 🏗️ Arquitetura
+## ­ƒôè Diagrama UML ÔÇö Arquitetura de Classes
+
+```mermaid
+classDiagram
+    class AuthController {
+        +login(LoginRequest) TokenResponse
+        +refresh(RefreshTokenRequest) TokenResponse
+        +logout(HttpServletRequest) void
+        +register(UsuarioRequest) UsuarioResponse
+    }
+
+    class AuthService {
+        -usuarioRepo UsuarioJavaRepository
+        -accessTokenRepo AccessTokenJavaRepository
+        -refreshTokenRepo RefreshTokenJavaRepository
+        -passwordEncoder BCryptPasswordEncoder
+        +login(String email, String senha) TokenResponse
+        +refresh(String refreshToken) TokenResponse
+        +logout(String accessToken) void
+        +register(UsuarioRequest) UsuarioResponse
+        -hashToken(String token) String
+        -gerarAccessToken(UsuarioJava) String
+        -gerarRefreshToken(UsuarioJava) String
+    }
+
+    class AuthTokenFilter {
+        -usuarioRepo UsuarioJavaRepository
+        -accessTokenRepo AccessTokenJavaRepository
+        +doFilterInternal(request, response, chain) void
+        -extrairToken(request) String
+        -hashToken(String token) String
+    }
+
+    class ProdutorController {
+        +criar(ProdutorRequest, request) EntityModel
+        +buscarPorId(Long id) EntityModel
+        +buscarMeu(request) EntityModel
+        +listarTodos() CollectionModel
+        +atualizar(Long id, ProdutorRequest) EntityModel
+        +desativar(Long id) void
+    }
+
+    class ProdutorService {
+        -produtorRepo ProdutorRepository
+        +criar(ProdutorRequest, UsuarioJava) ProdutorResponse
+        +buscarPorId(Long id) ProdutorResponse
+        +buscarPorUsuario(UsuarioJava) ProdutorResponse
+        +listarTodos() List~ProdutorResponse~
+        +atualizar(Long id, ProdutorRequest) ProdutorResponse
+        +desativar(Long id) void
+    }
+
+    class GlobalExceptionHandler {
+        +handleNotFound(ResourceNotFoundException) ErrorResponse
+        +handleBusiness(BusinessException) ErrorResponse
+        +handleUnauthorized(UnauthorizedException) ErrorResponse
+        +handleForbidden(ForbiddenException) ErrorResponse
+        +handleValidation(MethodArgumentNotValidException) ErrorResponse
+        +handleConflict(DataIntegrityViolationException) ErrorResponse
+        +handleGeneric(Exception) ErrorResponse
+    }
+
+    class UsuarioJava {
+        -Long idUsuario
+        -String nmNome
+        -String dsEmail
+        -String dsSenhaHash
+        -String dsRole
+        -Auditoria auditoria
+        +getFlAtivo() String
+        +getDtCriacao() LocalDateTime
+    }
+
+    class Auditoria {
+        -String flAtivo
+        -LocalDateTime dtCriacao
+        +prePersist() void
+    }
+
+    class Produtor {
+        -Long idProdutor
+        -UsuarioJava usuario
+        -String nmNome
+        -String nrCpf
+        -String dsEmail
+        -Auditoria auditoria
+    }
+
+    class Talhao {
+        -Long idTalhao
+        -Propriedade propriedade
+        -String nmNome
+        -String dsCultura
+        -Number nrAreaHa
+        -Auditoria auditoria
+    }
+
+    class Alerta {
+        -Long idAlerta
+        -Talhao talhao
+        -String tpTipo
+        -String tpNivel
+        -String tpOrigem
+        -String stStatus
+        -LocalDateTime dtGerado
+    }
+
+    AuthController --> AuthService
+    ProdutorController --> ProdutorService
+    AuthTokenFilter --> UsuarioJavaRepository
+    UsuarioJava --> Auditoria
+    Produtor --> Auditoria
+    Talhao --> Auditoria
+    Produtor --> UsuarioJava
+    Talhao --> Propriedade
+    Alerta --> Talhao
+```
+
+---
+
+## ­ƒº¬ Evid├¬ncias de Testes
+
+### Testes via Swagger UI
+
+#### Login e Autentica├º├úo
+> ­ƒô© *[Substituir por print do POST /auth/login com resposta 200 e tokens]*
+
+#### Cadastro de Produtor
+> ­ƒô© *[Substituir por print do POST /produtores com resposta 201 e HATEOAS links]*
+
+#### Leitura de Sensor e Alerta Autom├ítico
+> ­ƒô© *[Substituir por print do POST /leituras com resposta 201]*
+> ­ƒô© *[Substituir por print do GET /alertas/produtor/me/pendentes mostrando alerta gerado automaticamente]*
+
+#### Valida├º├úo de Entrada (400)
+> ­ƒô© *[Substituir por print de requisi├º├úo inv├ílida retornando 400 com fieldErrors]*
+
+#### Controle de Acesso (403)
+> ­ƒô© *[Substituir por print de USER tentando endpoint ADMIN retornando 403]*
+
+---
+
+### Persist├¬ncia no Banco Oracle
+
+#### Dados inseridos via API
+> ­ƒô© *[Substituir por print do SQL Developer ou similar mostrando SELECT em TB_GST_PRODUTOR]*
+> ­ƒô© *[Substituir por print mostrando SELECT em TB_GST_ALERTA com alertas gerados pelo trigger]*
+
+#### Configura├º├úo criada automaticamente pelo trigger
+> ­ƒô© *[Substituir por print mostrando SELECT em TB_GST_CONFIGURACAO ap├│s INSERT em TB_GST_TALHAO]*
+
+#### Log de auditoria de alerta
+> ­ƒô© *[Substituir por print mostrando SELECT em TB_GST_LOG_ALERTA com hist├│rico de status]*
+
+---
+
+## ­ƒÅù´©Å Arquitetura
 
 ```
 br.com.geosat.server
-├── config/          # OpenAPI, CORS, Filter registration, AuthProperties
-├── controller/      # REST controllers com HATEOAS e Swagger annotations
-├── dto/
-│   ├── request/     # Java Records com Bean Validation (@NotBlank, @Email, @Pattern...)
-│   └── response/    # Java Records com factory from(Entity)
-├── exception/       # Exceções customizadas + GlobalExceptionHandler (@RestControllerAdvice)
-├── filter/          # AuthTokenFilter (OncePerRequestFilter) + TokenUtils (SHA-256)
-├── model/           # Entidades JPA com @Embedded Auditoria (modelagem avançada)
-├── repository/      # Spring Data JPA — JpaRepository
-└── service/         # Regras de negócio e orquestração
+Ôö£ÔöÇÔöÇ config/          # OpenAPI, CORS, Filter registration, AuthProperties
+Ôö£ÔöÇÔöÇ controller/      # REST controllers com HATEOAS e Swagger annotations
+Ôö£ÔöÇÔöÇ dto/
+Ôöé   Ôö£ÔöÇÔöÇ request/     # Java Records com Bean Validation (@NotBlank, @Email, @Pattern...)
+Ôöé   ÔööÔöÇÔöÇ response/    # Java Records com factory from(Entity)
+Ôö£ÔöÇÔöÇ exception/       # Exce├º├Áes customizadas + GlobalExceptionHandler (@RestControllerAdvice)
+Ôö£ÔöÇÔöÇ filter/          # AuthTokenFilter (OncePerRequestFilter) + TokenUtils (SHA-256)
+Ôö£ÔöÇÔöÇ model/           # Entidades JPA com @Embedded Auditoria (modelagem avan├ºada)
+Ôö£ÔöÇÔöÇ repository/      # Spring Data JPA ÔÇö JpaRepository
+ÔööÔöÇÔöÇ service/         # Regras de neg├│cio e orquestra├º├úo
 ```
 
-### Modelagem Avançada — @Embedded
+### Modelagem Avan├ºada ÔÇö @Embedded
 
-A classe `Auditoria` é um `@Embeddable` que encapsula os campos `dtCriacao` e `flAtivo` presentes em múltiplas entidades. Usada com `@Embedded` em `UsuarioJava`, `Produtor`, `Propriedade`, `Talhao` e `Sensor`, demonstrando modelagem avançada com reutilização de componentes JPA.
+A classe `Auditoria` ├® um `@Embeddable` que encapsula os campos `dtCriacao` e `flAtivo` presentes em m├║ltiplas entidades. Usada com `@Embedded` em `UsuarioJava`, `Produtor`, `Propriedade`, `Talhao` e `Sensor`, demonstrando modelagem avan├ºada com reutiliza├º├úo de componentes JPA.
 
-### Autenticação Manual (sem Spring Security)
+### Autentica├º├úo Manual (sem Spring Security)
 
 - Login gera `accessToken` (UUID) + `refreshToken` (UUID)
-- Apenas o **hash SHA-256** de cada token é armazenado no banco
-- O plain text é retornado ao cliente: `Authorization: Bearer <token>`
-- `AuthTokenFilter` intercepta requisições protegidas, busca hash no banco, valida expiração
-- **Refresh token rotation**: ao renovar, o refresh antigo é revogado e dois novos tokens são gerados
+- Apenas o **hash SHA-256** de cada token ├® armazenado no banco
+- O plain text ├® retornado ao cliente: `Authorization: Bearer <token>`
+- `AuthTokenFilter` intercepta requisi├º├Áes protegidas, busca hash no banco, valida expira├º├úo
+- **Refresh token rotation**: ao renovar, o refresh antigo ├® revogado e dois novos tokens s├úo gerados
 
 ---
 
-## 🛠️ Tecnologias
+## ­ƒøá´©Å Tecnologias
 
-| Tecnologia | Versão |
+| Tecnologia | Vers├úo |
 |------------|--------|
 | Java | 21 |
 | Spring Boot | 4.0.6 |
@@ -85,36 +366,36 @@ A classe `Auditoria` é um `@Embeddable` que encapsula os campos `dtCriacao` e `
 
 ---
 
-## 📋 Endpoints
+## ­ƒôï Endpoints
 
-| Módulo | Base URL | Operações |
+| M├│dulo | Base URL | Opera├º├Áes |
 |--------|----------|-----------|
-| Autenticação | `/auth` | login, refresh, logout, register (ADMIN) |
-| Usuários | `/usuarios` | GET, PUT, DELETE (ADMIN) |
+| Autentica├º├úo | `/auth` | login, refresh, logout, register (ADMIN) |
+| Usu├írios | `/usuarios` | GET, PUT, DELETE (ADMIN) |
 | Produtores | `/produtores` | POST, GET, GET/me, PUT, DELETE |
 | Propriedades | `/propriedades` | POST, GET, GET/produtor/{id}, PUT, DELETE |
-| Talhões | `/talhoes` | POST, GET, GET/propriedade/{id}, PUT, DELETE |
+| Talh├Áes | `/talhoes` | POST, GET, GET/propriedade/{id}, PUT, DELETE |
 | Sensores | `/sensores` | POST, GET, GET/talhao/{id}, PUT, DELETE |
 | Leituras | `/leituras` | POST, GET/{id}, GET/sensor/{id}, GET/sensor/{id}/last |
 | Imagens Satelitais | `/imagens` | POST, GET, PATCH/processar, PATCH/erro |
 | Alertas | `/alertas` | GET, GET/{id}, GET/talhao, GET/produtor/me, PATCH/visualizar, PATCH/resolver, PATCH/reabrir |
-| Configurações | `/configuracoes` | GET/talhao/{id}, PUT/{id} |
+| Configura├º├Áes | `/configuracoes` | GET/talhao/{id}, PUT/{id} |
 
-Documentação completa interativa: `GET /swagger-ui.html`
+Documenta├º├úo completa interativa: `GET /swagger-ui.html`
 
 ---
 
-## ⚙️ Executando Localmente
+## ÔÜÖ´©Å Executando Localmente
 
-### Pré-requisitos
+### Pr├®-requisitos
 
 - Java 21+
 - Maven 3.8+
-- Acesso ao banco Oracle GeoSat (schema já criado e populado)
+- Acesso ao banco Oracle GeoSat (schema j├í criado e populado)
 
-### Variáveis de Ambiente
+### Vari├íveis de Ambiente
 
-Crie um arquivo `.env.local` na raiz do projeto (não commitar):
+Crie um arquivo `.env.local` na raiz do projeto (n├úo commitar):
 
 ```bash
 DB_GST_URL=jdbc:oracle:thin:@<host>:<port>/<service>
@@ -149,15 +430,15 @@ Acesse:
 
 ---
 
-## ☁️ Deploy (Render)
+## Ôÿü´©Å Deploy (Render)
 
-1. Faça push do repositório para o GitHub
-2. No Render, crie um novo **Web Service** apontando para o repositório
+1. Fa├ºa push do reposit├│rio para o GitHub
+2. No Render, crie um novo **Web Service** apontando para o reposit├│rio
 3. Configure o Build Command: `./mvnw package -DskipTests`
 4. Configure o Start Command: `java -jar target/*.jar`
 5. Em **Environment Variables**, adicione:
 
-| Variável | Valor |
+| Vari├ível | Valor |
 |----------|-------|
 | `DB_GST_URL` | `jdbc:oracle:thin:@<host>:<port>/<service>` |
 | `DB_GST_USERNAME` | seu RM Oracle |
@@ -167,7 +448,7 @@ Ou importe o arquivo `.env` diretamente pelo painel do Render.
 
 ---
 
-## 🧪 Exemplos de Teste
+## ­ƒº¬ Exemplos de Teste
 
 ### 1. Login
 
@@ -194,7 +475,7 @@ curl -X POST http://localhost:8080/produtores \
   -H "Authorization: Bearer <accessToken>" \
   -H "Content-Type: application/json" \
   -d '{
-    "nmNome": "João Silva",
+    "nmNome": "Jo├úo Silva",
     "nrCpf": "12345678901",
     "dsEmail": "joao@fazenda.com",
     "nrTelefone": "11999999999"
@@ -216,7 +497,7 @@ curl -X POST http://localhost:8080/leituras \
   }'
 ```
 
-> O trigger Oracle verifica automaticamente se `nrUmidadeSolo` está abaixo do threshold configurado para o talhão. Se estiver, um alerta é gerado sem ação adicional da API.
+> O trigger Oracle verifica automaticamente se `nrUmidadeSolo` est├í abaixo do threshold configurado para o talh├úo. Se estiver, um alerta ├® gerado sem a├º├úo adicional da API.
 
 ### 4. Consultar Alertas Pendentes
 
@@ -235,28 +516,28 @@ curl -X POST http://localhost:8080/auth/refresh \
 
 ---
 
-## 🗄️ Banco de Dados
+## ­ƒùä´©Å Banco de Dados
 
-O schema Oracle **já existe e está populado**. A API usa `ddl-auto=none` — nunca cria nem altera tabelas.
+O schema Oracle **j├í existe e est├í populado**. A API usa `ddl-auto=none` ÔÇö nunca cria nem altera tabelas.
 
-Os triggers Oracle são responsáveis por:
-- Criar `TB_GST_CONFIGURACAO` automaticamente ao inserir um talhão
+Os triggers Oracle s├úo respons├íveis por:
+- Criar `TB_GST_CONFIGURACAO` automaticamente ao inserir um talh├úo
 - Gerar alertas ao inserir leituras com umidade abaixo do threshold
 - Gerar alertas ao processar imagem com NDVI abaixo do threshold
 - Registrar logs em `TB_GST_LOG_ALERTA` ao mudar status de alerta
 
-### Fluxo de Uso Básico
+### Fluxo de Uso B├ísico
 
 ```
-1. POST /auth/login                        → obter tokens
-2. POST /auth/register (ADMIN)             → criar usuários
-3. POST /produtores                        → cadastrar produtor
-4. POST /propriedades                      → cadastrar propriedade
-5. POST /talhoes                           → cadastrar talhão (trigger cria configuração)
-6. POST /sensores                          → cadastrar sensor ESP32
-7. POST /leituras                          → registrar leitura (trigger pode gerar alerta)
-8. GET  /alertas/produtor/me/pendentes     → consultar alertas
-9. PATCH /alertas/{id}/resolver            → resolver alerta
+1. POST /auth/login                        ÔåÆ obter tokens
+2. POST /auth/register (ADMIN)             ÔåÆ criar usu├írios
+3. POST /produtores                        ÔåÆ cadastrar produtor
+4. POST /propriedades                      ÔåÆ cadastrar propriedade
+5. POST /talhoes                           ÔåÆ cadastrar talh├úo (trigger cria configura├º├úo)
+6. POST /sensores                          ÔåÆ cadastrar sensor ESP32
+7. POST /leituras                          ÔåÆ registrar leitura (trigger pode gerar alerta)
+8. GET  /alertas/produtor/me/pendentes     ÔåÆ consultar alertas
+9. PATCH /alertas/{id}/resolver            ÔåÆ resolver alerta
 ```
 
 ---
@@ -265,6 +546,10 @@ Os triggers Oracle são responsáveis por:
 
 > Esta seção cobre exclusivamente o ambiente Docker provisionado na Microsoft Azure para a disciplina de DevOps Tools & Cloud Computing.
 > O ambiente local e o deploy no Render são descritos nas seções anteriores.
+
+### How To
+
+Este guia descreve o passo a passo completo para provisionar a infraestrutura na Azure, subir os containers Docker, realizar o seed do banco Oracle e validar o ambiente em produção. Siga os passos em ordem.
 
 ### Visão geral
 
@@ -437,19 +722,19 @@ az group show --name rg-geosat-devops --query properties.provisioningState --out
 
 ### Diagrama macro da infraestrutura
 
-![Arquitetura GeoSat](geosat-devops/docs/arquitetura_geogsat.drawio.png)
+![Arquitetura GeoSat](geosat-devops/docs/arquitetura_geogast.drawio.png)
 
 ---
 
 ## 🌐 Contexto do Sistema GeoSat
 
-O GeoSat é composto por três módulos integrados:
+O GeoSat ├® composto por tr├¬s m├│dulos integrados:
 
-- **Esta API Java** — core da plataforma, consumida pelo app mobile React Native dos produtores rurais
-- **API .NET** — painel administrativo para cooperativas e gestores, responsável por processar imagens satelitais
-- **ESP32** — sensores IoT instalados nos talhões que enviam leituras periodicamente
+- **Esta API Java** ÔÇö core da plataforma, consumida pelo app mobile React Native dos produtores rurais
+- **API .NET** ÔÇö painel administrativo para cooperativas e gestores, respons├ível por processar imagens satelitais
+- **ESP32** ÔÇö sensores IoT instalados nos talh├Áes que enviam leituras periodicamente
 
-Ambas as APIs acessam o mesmo banco Oracle. Os triggers Oracle são o motor central de geração de alertas.
+Ambas as APIs acessam o mesmo banco Oracle. Os triggers Oracle s├úo o motor central de gera├º├úo de alertas.
 
 ---
 
