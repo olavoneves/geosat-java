@@ -437,7 +437,7 @@ az group show --name rg-geosat-devops --query properties.provisioningState --out
 
 ### Diagrama macro da infraestrutura
 
-![Arquitetura GeoSat](geosat-devops/docs/arquitetura_geogast.drawio.png)
+![Arquitetura GeoSat](geosat-devops/docs/arquitetura_geogsat.drawio.png)
 
 ---
 
