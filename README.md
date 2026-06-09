@@ -1,26 +1,26 @@
-﻿# GeoSat API ÔÇö Java REST Backend
+﻿# GeoSat API — Java REST Backend
 
-API REST do sistema **GeoSat**, plataforma de monitoramento agr├¡cola que combina imagens satelitais (NASA/ESA) com sensores IoT ESP32 para gera├º├úo de alertas antecipados de risco para produtores rurais brasileiros.
+API REST do sistema **GeoSat**, plataforma de monitoramento agrícola que combina imagens satelitais (NASA/ESA) com sensores IoT ESP32 para geração de alertas antecipados de risco para produtores rurais brasileiros.
 
-> **FIAP ÔÇö Global Solution 2026/1 | 2TDS Fevereiro**
+> **FIAP — Global Solution 2026/1 | 2TDS Fevereiro**
 
 > **Professor Orientador:** Marcel Stefan Wagner
 
 ---
 
-## ­ƒöù Links
+## 🔗 Links
 
 | Recurso | Link |
 |---------|------|
-| ­ƒÜÇ Deploy (produ├º├úo) | *https://geosat-java.onrender.com* |
-| ­ƒôû Swagger UI (produ├º├úo) | *https://geosat-java.onrender.com/swagger-ui/index.html* |
-| ­ƒÄÑ V├¡deo de Apresenta├º├úo | **[SUBSTITUIR ÔÇö link do YouTube ap├│s grava├º├úo]** |
-| ­ƒÄ» V├¡deo Pitch (3 min) | **[SUBSTITUIR ÔÇö link do YouTube ap├│s grava├º├úo]** |
-| ­ƒÆ╗ Reposit├│rio GitHub | *https://github.com/olavoneves/geosat-java* |
+| 🚀 Deploy (produção) | *https://geosat-java.onrender.com* |
+| 📖 Swagger UI (produção) | *https://geosat-java.onrender.com/swagger-ui/index.html* |
+| 🎥 Vídeo de Apresentação | **[SUBSTITUIR — link do YouTube após gravação]** |
+| 🎯 Vídeo Pitch (3 min) | **[SUBSTITUIR — link do YouTube após gravação]** |
+| 💻 Repositório GitHub | *https://github.com/olavoneves/geosat-java* |
 
 ---
 
-## ­ƒôÉ Diagrama de Entidades
+## 📐 Diagrama de Entidades
 
 ```mermaid
 erDiagram
@@ -162,7 +162,7 @@ erDiagram
 
 ---
 
-## ­ƒôè Diagrama UML ÔÇö Arquitetura de Classes
+## 📊 Diagrama UML — Arquitetura de Classes
 
 ```mermaid
 classDiagram
@@ -282,75 +282,75 @@ classDiagram
 
 ---
 
-## ­ƒº¬ Evid├¬ncias de Testes
+## 🧪 Evidências de Testes
 
 ### Testes via Swagger UI
 
-#### Login e Autentica├º├úo
-> ­ƒô© *[Substituir por print do POST /auth/login com resposta 200 e tokens]*
+#### Login e Autenticação
+> 📸 *[Substituir por print do POST /auth/login com resposta 200 e tokens]*
 
 #### Cadastro de Produtor
-> ­ƒô© *[Substituir por print do POST /produtores com resposta 201 e HATEOAS links]*
+> 📸 *[Substituir por print do POST /produtores com resposta 201 e HATEOAS links]*
 
-#### Leitura de Sensor e Alerta Autom├ítico
-> ­ƒô© *[Substituir por print do POST /leituras com resposta 201]*
-> ­ƒô© *[Substituir por print do GET /alertas/produtor/me/pendentes mostrando alerta gerado automaticamente]*
+#### Leitura de Sensor e Alerta Automático
+> 📸 *[Substituir por print do POST /leituras com resposta 201]*
+> 📸 *[Substituir por print do GET /alertas/produtor/me/pendentes mostrando alerta gerado automaticamente]*
 
-#### Valida├º├úo de Entrada (400)
-> ­ƒô© *[Substituir por print de requisi├º├úo inv├ílida retornando 400 com fieldErrors]*
+#### Validação de Entrada (400)
+> 📸 *[Substituir por print de requisição inválida retornando 400 com fieldErrors]*
 
 #### Controle de Acesso (403)
-> ­ƒô© *[Substituir por print de USER tentando endpoint ADMIN retornando 403]*
+> 📸 *[Substituir por print de USER tentando endpoint ADMIN retornando 403]*
 
 ---
 
-### Persist├¬ncia no Banco Oracle
+### Persistência no Banco Oracle
 
 #### Dados inseridos via API
-> ­ƒô© *[Substituir por print do SQL Developer ou similar mostrando SELECT em TB_GST_PRODUTOR]*
-> ­ƒô© *[Substituir por print mostrando SELECT em TB_GST_ALERTA com alertas gerados pelo trigger]*
+> 📸 *[Substituir por print do SQL Developer ou similar mostrando SELECT em TB_GST_PRODUTOR]*
+> 📸 *[Substituir por print mostrando SELECT em TB_GST_ALERTA com alertas gerados pelo trigger]*
 
-#### Configura├º├úo criada automaticamente pelo trigger
-> ­ƒô© *[Substituir por print mostrando SELECT em TB_GST_CONFIGURACAO ap├│s INSERT em TB_GST_TALHAO]*
+#### Configuração criada automaticamente pelo trigger
+> 📸 *[Substituir por print mostrando SELECT em TB_GST_CONFIGURACAO após INSERT em TB_GST_TALHAO]*
 
 #### Log de auditoria de alerta
-> ­ƒô© *[Substituir por print mostrando SELECT em TB_GST_LOG_ALERTA com hist├│rico de status]*
+> 📸 *[Substituir por print mostrando SELECT em TB_GST_LOG_ALERTA com histórico de status]*
 
 ---
 
-## ­ƒÅù´©Å Arquitetura
+## 🏗️ Arquitetura
 
 ```
 br.com.geosat.server
-Ôö£ÔöÇÔöÇ config/          # OpenAPI, CORS, Filter registration, AuthProperties
-Ôö£ÔöÇÔöÇ controller/      # REST controllers com HATEOAS e Swagger annotations
-Ôö£ÔöÇÔöÇ dto/
-Ôöé   Ôö£ÔöÇÔöÇ request/     # Java Records com Bean Validation (@NotBlank, @Email, @Pattern...)
-Ôöé   ÔööÔöÇÔöÇ response/    # Java Records com factory from(Entity)
-Ôö£ÔöÇÔöÇ exception/       # Exce├º├Áes customizadas + GlobalExceptionHandler (@RestControllerAdvice)
-Ôö£ÔöÇÔöÇ filter/          # AuthTokenFilter (OncePerRequestFilter) + TokenUtils (SHA-256)
-Ôö£ÔöÇÔöÇ model/           # Entidades JPA com @Embedded Auditoria (modelagem avan├ºada)
-Ôö£ÔöÇÔöÇ repository/      # Spring Data JPA ÔÇö JpaRepository
-ÔööÔöÇÔöÇ service/         # Regras de neg├│cio e orquestra├º├úo
+├── config/          # OpenAPI, CORS, Filter registration, AuthProperties
+├── controller/      # REST controllers com HATEOAS e Swagger annotations
+├── dto/
+│   ├── request/     # Java Records com Bean Validation (@NotBlank, @Email, @Pattern...)
+│   └── response/    # Java Records com factory from(Entity)
+├── exception/       # Exceções customizadas + GlobalExceptionHandler (@RestControllerAdvice)
+├── filter/          # AuthTokenFilter (OncePerRequestFilter) + TokenUtils (SHA-256)
+├── model/           # Entidades JPA com @Embedded Auditoria (modelagem avançada)
+├── repository/      # Spring Data JPA — JpaRepository
+└── service/         # Regras de negócio e orquestração
 ```
 
-### Modelagem Avan├ºada ÔÇö @Embedded
+### Modelagem Avançada — @Embedded
 
-A classe `Auditoria` ├® um `@Embeddable` que encapsula os campos `dtCriacao` e `flAtivo` presentes em m├║ltiplas entidades. Usada com `@Embedded` em `UsuarioJava`, `Produtor`, `Propriedade`, `Talhao` e `Sensor`, demonstrando modelagem avan├ºada com reutiliza├º├úo de componentes JPA.
+A classe `Auditoria` é um `@Embeddable` que encapsula os campos `dtCriacao` e `flAtivo` presentes em múltiplas entidades. Usada com `@Embedded` em `UsuarioJava`, `Produtor`, `Propriedade`, `Talhao` e `Sensor`, demonstrando modelagem avançada com reutilização de componentes JPA.
 
-### Autentica├º├úo Manual (sem Spring Security)
+### Autenticação Manual (sem Spring Security)
 
 - Login gera `accessToken` (UUID) + `refreshToken` (UUID)
-- Apenas o **hash SHA-256** de cada token ├® armazenado no banco
-- O plain text ├® retornado ao cliente: `Authorization: Bearer <token>`
-- `AuthTokenFilter` intercepta requisi├º├Áes protegidas, busca hash no banco, valida expira├º├úo
-- **Refresh token rotation**: ao renovar, o refresh antigo ├® revogado e dois novos tokens s├úo gerados
+- Apenas o **hash SHA-256** de cada token é armazenado no banco
+- O plain text é retornado ao cliente: `Authorization: Bearer <token>`
+- `AuthTokenFilter` intercepta requisições protegidas, busca hash no banco, valida expiração
+- **Refresh token rotation**: ao renovar, o refresh antigo é revogado e dois novos tokens são gerados
 
 ---
 
-## ­ƒøá´©Å Tecnologias
+## 🛠️ Tecnologias
 
-| Tecnologia | Vers├úo |
+| Tecnologia | Versão |
 |------------|--------|
 | Java | 21 |
 | Spring Boot | 4.0.6 |
@@ -366,36 +366,36 @@ A classe `Auditoria` ├® um `@Embeddable` que encapsula os campos `dtCriacao` 
 
 ---
 
-## ­ƒôï Endpoints
+## 📋 Endpoints
 
-| M├│dulo | Base URL | Opera├º├Áes |
+| Módulo | Base URL | Operações |
 |--------|----------|-----------|
-| Autentica├º├úo | `/auth` | login, refresh, logout, register (ADMIN) |
-| Usu├írios | `/usuarios` | GET, PUT, DELETE (ADMIN) |
+| Autenticação | `/auth` | login, refresh, logout, register (ADMIN) |
+| Usuários | `/usuarios` | GET, PUT, DELETE (ADMIN) |
 | Produtores | `/produtores` | POST, GET, GET/me, PUT, DELETE |
 | Propriedades | `/propriedades` | POST, GET, GET/produtor/{id}, PUT, DELETE |
-| Talh├Áes | `/talhoes` | POST, GET, GET/propriedade/{id}, PUT, DELETE |
+| Talhões | `/talhoes` | POST, GET, GET/propriedade/{id}, PUT, DELETE |
 | Sensores | `/sensores` | POST, GET, GET/talhao/{id}, PUT, DELETE |
 | Leituras | `/leituras` | POST, GET/{id}, GET/sensor/{id}, GET/sensor/{id}/last |
 | Imagens Satelitais | `/imagens` | POST, GET, PATCH/processar, PATCH/erro |
 | Alertas | `/alertas` | GET, GET/{id}, GET/talhao, GET/produtor/me, PATCH/visualizar, PATCH/resolver, PATCH/reabrir |
-| Configura├º├Áes | `/configuracoes` | GET/talhao/{id}, PUT/{id} |
+| Configurações | `/configuracoes` | GET/talhao/{id}, PUT/{id} |
 
-Documenta├º├úo completa interativa: `GET /swagger-ui.html`
+Documentação completa interativa: `GET /swagger-ui.html`
 
 ---
 
-## ÔÜÖ´©Å Executando Localmente
+## ⚙️ Executando Localmente
 
-### Pr├®-requisitos
+### Pré-requisitos
 
 - Java 21+
 - Maven 3.8+
-- Acesso ao banco Oracle GeoSat (schema j├í criado e populado)
+- Acesso ao banco Oracle GeoSat (schema já criado e populado)
 
-### Vari├íveis de Ambiente
+### Variáveis de Ambiente
 
-Crie um arquivo `.env.local` na raiz do projeto (n├úo commitar):
+Crie um arquivo `.env.local` na raiz do projeto (não commitar):
 
 ```bash
 DB_GST_URL=jdbc:oracle:thin:@<host>:<port>/<service>
@@ -430,15 +430,15 @@ Acesse:
 
 ---
 
-## Ôÿü´©Å Deploy (Render)
+## ☁️ Deploy (Render)
 
-1. Fa├ºa push do reposit├│rio para o GitHub
-2. No Render, crie um novo **Web Service** apontando para o reposit├│rio
+1. Faça push do repositório para o GitHub
+2. No Render, crie um novo **Web Service** apontando para o repositório
 3. Configure o Build Command: `./mvnw package -DskipTests`
 4. Configure o Start Command: `java -jar target/*.jar`
 5. Em **Environment Variables**, adicione:
 
-| Vari├ível | Valor |
+| Variável | Valor |
 |----------|-------|
 | `DB_GST_URL` | `jdbc:oracle:thin:@<host>:<port>/<service>` |
 | `DB_GST_USERNAME` | seu RM Oracle |
@@ -448,7 +448,7 @@ Ou importe o arquivo `.env` diretamente pelo painel do Render.
 
 ---
 
-## ­ƒº¬ Exemplos de Teste
+## 🧪 Exemplos de Teste
 
 ### 1. Login
 
@@ -475,7 +475,7 @@ curl -X POST http://localhost:8080/produtores \
   -H "Authorization: Bearer <accessToken>" \
   -H "Content-Type: application/json" \
   -d '{
-    "nmNome": "Jo├úo Silva",
+    "nmNome": "João Silva",
     "nrCpf": "12345678901",
     "dsEmail": "joao@fazenda.com",
     "nrTelefone": "11999999999"
@@ -497,7 +497,7 @@ curl -X POST http://localhost:8080/leituras \
   }'
 ```
 
-> O trigger Oracle verifica automaticamente se `nrUmidadeSolo` est├í abaixo do threshold configurado para o talh├úo. Se estiver, um alerta ├® gerado sem a├º├úo adicional da API.
+> O trigger Oracle verifica automaticamente se `nrUmidadeSolo` está abaixo do threshold configurado para o talhão. Se estiver, um alerta é gerado sem ação adicional da API.
 
 ### 4. Consultar Alertas Pendentes
 
@@ -516,28 +516,28 @@ curl -X POST http://localhost:8080/auth/refresh \
 
 ---
 
-## ­ƒùä´©Å Banco de Dados
+## 🗄️ Banco de Dados
 
-O schema Oracle **j├í existe e est├í populado**. A API usa `ddl-auto=none` ÔÇö nunca cria nem altera tabelas.
+O schema Oracle **já existe e está populado**. A API usa `ddl-auto=none` — nunca cria nem altera tabelas.
 
-Os triggers Oracle s├úo respons├íveis por:
-- Criar `TB_GST_CONFIGURACAO` automaticamente ao inserir um talh├úo
+Os triggers Oracle são responsáveis por:
+- Criar `TB_GST_CONFIGURACAO` automaticamente ao inserir um talhão
 - Gerar alertas ao inserir leituras com umidade abaixo do threshold
 - Gerar alertas ao processar imagem com NDVI abaixo do threshold
 - Registrar logs em `TB_GST_LOG_ALERTA` ao mudar status de alerta
 
-### Fluxo de Uso B├ísico
+### Fluxo de Uso Básico
 
 ```
-1. POST /auth/login                        ÔåÆ obter tokens
-2. POST /auth/register (ADMIN)             ÔåÆ criar usu├írios
-3. POST /produtores                        ÔåÆ cadastrar produtor
-4. POST /propriedades                      ÔåÆ cadastrar propriedade
-5. POST /talhoes                           ÔåÆ cadastrar talh├úo (trigger cria configura├º├úo)
-6. POST /sensores                          ÔåÆ cadastrar sensor ESP32
-7. POST /leituras                          ÔåÆ registrar leitura (trigger pode gerar alerta)
-8. GET  /alertas/produtor/me/pendentes     ÔåÆ consultar alertas
-9. PATCH /alertas/{id}/resolver            ÔåÆ resolver alerta
+1. POST /auth/login                        → obter tokens
+2. POST /auth/register (ADMIN)             → criar usuários
+3. POST /produtores                        → cadastrar produtor
+4. POST /propriedades                      → cadastrar propriedade
+5. POST /talhoes                           → cadastrar talhão (trigger cria configuração)
+6. POST /sensores                          → cadastrar sensor ESP32
+7. POST /leituras                          → registrar leitura (trigger pode gerar alerta)
+8. GET  /alertas/produtor/me/pendentes     → consultar alertas
+9. PATCH /alertas/{id}/resolver            → resolver alerta
 ```
 
 ---
@@ -722,19 +722,19 @@ az group show --name rg-geosat-devops --query properties.provisioningState --out
 
 ### Diagrama macro da infraestrutura
 
-![Arquitetura GeoSat](geosat-devops/docs/arquitetura_geogast.drawio.png)
+![Arquitetura GeoSat](geosat-devops/docs/arquitetura_geosat.drawio.png)
 
 ---
 
 ## 🌐 Contexto do Sistema GeoSat
 
-O GeoSat ├® composto por tr├¬s m├│dulos integrados:
+O GeoSat é composto por três módulos integrados:
 
-- **Esta API Java** ÔÇö core da plataforma, consumida pelo app mobile React Native dos produtores rurais
-- **API .NET** ÔÇö painel administrativo para cooperativas e gestores, respons├ível por processar imagens satelitais
-- **ESP32** ÔÇö sensores IoT instalados nos talh├Áes que enviam leituras periodicamente
+- **Esta API Java** — core da plataforma, consumida pelo app mobile React Native dos produtores rurais
+- **API .NET** — painel administrativo para cooperativas e gestores, responsável por processar imagens satelitais
+- **ESP32** — sensores IoT instalados nos talhões que enviam leituras periodicamente
 
-Ambas as APIs acessam o mesmo banco Oracle. Os triggers Oracle s├úo o motor central de gera├º├úo de alertas.
+Ambas as APIs acessam o mesmo banco Oracle. Os triggers Oracle são o motor central de geração de alertas.
 
 ---
 
