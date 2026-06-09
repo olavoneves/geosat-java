@@ -287,34 +287,34 @@ classDiagram
 ### Testes via Swagger UI
 
 #### Login e Autenticação
-> 📸 *[Substituir por print do POST /auth/login com resposta 200 e tokens]*
+![Login e Autenticação — POST /auth/login 200 OK](docs/prints/login-auth.png)
 
 #### Cadastro de Produtor
-> 📸 *[Substituir por print do POST /produtores com resposta 201 e HATEOAS links]*
+![Cadastro de Produtor — POST /produtores 201 Created](docs/prints/cadastro-produtor.png)
 
 #### Leitura de Sensor e Alerta Automático
-> 📸 *[Substituir por print do POST /leituras com resposta 201]*
-> 📸 *[Substituir por print do GET /alertas/produtor/me/pendentes mostrando alerta gerado automaticamente]*
+![Leitura de Sensor — POST /leituras 201 Created](docs/prints/leitura.png)
+![Alertas Pendentes — GET /alertas/produtor/me/pendentes 200 OK](docs/prints/alertas.png)
 
-#### Validação de Entrada (400)
-> 📸 *[Substituir por print de requisição inválida retornando 400 com fieldErrors]*
+#### Tratamento de Erros (404)
+![Recurso não encontrado — 404 Not Found](docs/prints/404.png)
 
 #### Controle de Acesso (403)
-> 📸 *[Substituir por print de USER tentando endpoint ADMIN retornando 403]*
+![Acesso Restrito — 403 Forbidden](docs/prints/acesso-restrito.png)
 
 ---
 
 ### Persistência no Banco Oracle
 
 #### Dados inseridos via API
-> 📸 *[Substituir por print do SQL Developer ou similar mostrando SELECT em TB_GST_PRODUTOR]*
-> 📸 *[Substituir por print mostrando SELECT em TB_GST_ALERTA com alertas gerados pelo trigger]*
+![SELECT TB_GST_PRODUTOR](docs/prints/select-produtor.png)
+![SELECT TB_GST_ALERTA — alertas gerados pelo trigger](docs/prints/select-alerta.png)
 
 #### Configuração criada automaticamente pelo trigger
-> 📸 *[Substituir por print mostrando SELECT em TB_GST_CONFIGURACAO após INSERT em TB_GST_TALHAO]*
+![SELECT TB_GST_CONFIGURACAO — criada automaticamente pelo trigger](docs/prints/select_configuracao.png)
 
 #### Log de auditoria de alerta
-> 📸 *[Substituir por print mostrando SELECT em TB_GST_LOG_ALERTA com histórico de status]*
+![SELECT TB_GST_LOG_ALERTA — histórico de auditoria](docs/prints/select-log-alerta.png)
 
 ---
 
