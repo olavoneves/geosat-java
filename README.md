@@ -1,4 +1,4 @@
-# GeoSat API — Java REST Backend
+﻿# GeoSat API — Java REST Backend
 
 API REST do sistema **GeoSat**, plataforma de monitoramento agrícola que combina imagens satelitais (NASA/ESA) com sensores IoT ESP32 para geração de alertas antecipados de risco para produtores rurais brasileiros.
 
@@ -539,6 +539,190 @@ Os triggers Oracle são responsáveis por:
 8. GET  /alertas/produtor/me/pendentes     → consultar alertas
 9. PATCH /alertas/{id}/resolver            → resolver alerta
 ```
+
+---
+
+## 🐳 DevOps — Execução em Nuvem (Azure)
+
+> Esta seção cobre exclusivamente o ambiente Docker provisionado na Microsoft Azure para a disciplina de DevOps Tools & Cloud Computing.
+> O ambiente local e o deploy no Render são descritos nas seções anteriores.
+
+### How To
+
+Este guia descreve o passo a passo completo para provisionar a infraestrutura na Azure, subir os containers Docker, realizar o seed do banco Oracle e validar o ambiente em produção. Siga os passos em ordem.
+
+### Visão geral
+
+Dois containers Docker sobem em uma VM Ubuntu na Azure:
+
+| Container | Imagem | Porta |
+|---|---|---|
+| `api-geosat-561940` | Dockerfile multi-stage deste repositório | 8080 |
+| `oracle-geosat-561940` | `gvenzl/oracle-xe:21-slim` | 1521 |
+
+Ambos executam na rede isolada `geosat-network`. O Oracle usa volume nomeado `oracle-data` para persistência. A API só sobe após o Oracle estar `healthy`.
+
+### Pré-requisitos
+
+- Azure CLI instalado e autenticado (`az login`)
+- Git Bash ou terminal Unix-like
+- Acesso à subscription Azure for Students
+
+### Passo 1 — Provisionar a VM na Azure
+
+```bash
+bash scripts-cli/setup-geosat.sh
+```
+
+Cria o Resource Group `rg-geosat-devops` na região North Central US, provisiona a VM `vm-geosat` (Ubuntu 22.04, Standard_B2als_v2, 4 GB RAM), abre as portas 8080 e 1521, instala Docker e ferramentas (Git, nano, curl, wget, htop).
+
+```bash
+# Validar infraestrutura (7 verificacoes)
+bash scripts-cli/validate-geosat.sh
+```
+
+### Passo 2 — Conectar na VM via SSH
+
+```bash
+ssh azureuser@<IP_PUBLICO>
+# Senha: GeoSat@2026!
+```
+
+O IP público é exibido ao final da execução do `setup-geosat.sh`.
+
+### Passo 3 — Clonar o repositório e configurar variáveis
+
+```bash
+cd ~
+git clone https://github.com/olavoneves/geosat-java.git
+cd geosat-java
+cp .env.example .env
+nano .env
+```
+
+Preencha o `.env` com as credenciais do Oracle do container:
+
+```env
+# Escopo Oracle
+ORACLE_PASSWORD=SuaSenhaOracleAdmin
+APP_USER=geosat
+APP_USER_PASSWORD=SuaSenhaAppUser
+ORACLE_DATABASE=GEOSATDB
+
+# Escopo API Java
+DB_GST_URL=jdbc:oracle:thin:@oracle-db:1521/GEOSATDB
+DB_GST_USERNAME=geosat
+DB_GST_PASSWORD=SuaSenhaAppUser
+GEOSAT_AUTH_SECRET=geosat-2026-fiap-secret-key
+SPRING_JPA_HIBERNATE_DDL_AUTO=update
+```
+
+> ⚠️ **Nunca commite o `.env`** — ele está no `.gitignore`.
+
+### Passo 4 — Subir os containers
+
+```bash
+docker compose up -d --build
+```
+
+Aguarde o Oracle ficar `healthy` (~2-3 min) e a API inicializar (~30s depois):
+
+```bash
+# Acompanhar status
+docker compose ps
+
+# Confirmar API no ar
+curl http://localhost:8080/actuator/health
+```
+
+### Passo 5 — Inserir usuário ADMIN no banco (seed)
+
+O banco Oracle sobe vazio. O usuário master precisa ser inserido antes do primeiro uso da API:
+
+```bash
+docker exec -i oracle-geosat-561940 sqlplus geosat/SuaSenhaAppUser@//localhost:1521/GEOSATDB << EOF
+INSERT INTO TB_GST_USUARIO_JAVA (
+  ID_USUARIO, NM_NOME, DS_EMAIL, DS_SENHA_HASH, DS_ROLE, FL_ATIVO, DT_CRIACAO
+) VALUES (
+  1, 'Master Admin', 'master@geosat.com',
+  '$2b$10$QGgsKq6f1QtCXbuUhB1CvO1Jge9Ke/O8pJIC3xcF2vX9Tx5pQvpEe',
+  'ADMIN', 'S', SYSDATE
+);
+COMMIT;
+EXIT;
+EOF
+```
+
+Credenciais do ADMIN: `master@geosat.com` / `master123`
+
+### Passo 6 — Validar requisitos dos containers
+
+```bash
+# Containers rodando em background
+docker compose ps
+
+# Usuario nao-root (deve retornar: geosat)
+docker exec api-geosat-561940 whoami
+
+# Diretorio de trabalho
+docker exec api-geosat-561940 pwd
+
+# Volume nomeado
+docker volume ls
+
+# Rede isolada
+docker network ls | grep geosat
+```
+
+### Passo 7 — Testar CRUD via API
+
+Acesse o Swagger no navegador para testar interativamente:
+
+```
+http://<IP_PUBLICO>:8080/swagger-ui.html
+```
+
+Ou execute o script de cenas para gravação do vídeo demonstrativo:
+
+```bash
+# Cenas de gravacao (executar em sequencia)
+bash scenes/c1.sh   # Provisionar infraestrutura
+bash scenes/c2.sh   # Clonar, subir containers e seed
+bash scenes/c3.sh   # Validar requisitos
+bash scenes/c4.sh   # CRUD completo
+bash scenes/c5.sh   # Persistencia no Oracle + encerramento
+```
+
+### Passo 8 — Evidência de persistência (SQL Developer)
+
+Conecte ao Oracle do container via SQL Developer:
+
+| Campo | Valor |
+|---|---|
+| Host | `<IP_PUBLICO>` |
+| Port | `1521` |
+| SID | `GEOSATDB` |
+| Usuário | `geosat` |
+| Senha | `APP_USER_PASSWORD` do `.env` |
+
+Execute o script `scripts-cli/consulta-evidencia.sql` para evidenciar a persistência em todas as tabelas.
+
+### Passo 9 — Remover recursos (obrigatório após a entrega)
+
+```bash
+# Voltar ao Git Bash local (fora da VM)
+bash scripts-cli/cleanup-geosat.sh
+
+# Verificar remocao completa
+az group show --name rg-geosat-devops --query properties.provisioningState --output tsv
+# Quando retornar "not found" = tudo removido
+```
+
+> ⚠️ A não remoção gera custos na subscription Azure for Students.
+
+### Diagrama macro da infraestrutura
+
+![Arquitetura GeoSat](geosat-devops/docs/arquitetura_geosat.drawio.png)
 
 ---
 
