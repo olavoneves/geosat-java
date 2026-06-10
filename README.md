@@ -15,7 +15,7 @@ API REST do sistema **GeoSat**, plataforma de monitoramento agrícola que combin
 | 🚀 Deploy (produção) | *https://geosat-java.onrender.com* |
 | 📖 Swagger UI (produção) | *https://geosat-java.onrender.com/swagger-ui/index.html* |
 | 🎥 Vídeo de Apresentação | *https://youtu.be/Pf68a5nJ8_8?si=0yutavGWMHPZ688n* |
-| 🎯 Vídeo Pitch (3 min) | **[SUBSTITUIR — link do YouTube após gravação]** |
+| 🎯 Vídeo Pitch (3 min) | *https://youtu.be/OgCjSI7OILQ* |
 | 💻 Repositório GitHub | *https://github.com/olavoneves/geosat-java* |
 
 ---
